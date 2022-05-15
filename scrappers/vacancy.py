@@ -12,4 +12,3 @@ class Vacancy:
     locations: list[str]
     salary: Optional[str] = None
     published_at: Optional[str] = None
-    salary: Optional[str] = None

@@ -1,4 +1,4 @@
-from bs4 import BeautifulSoup, ResultSet, Tag
+from bs4 import BeautifulSoup, Tag
 from dataclasses import dataclass, field
 
 from scrappers.common import ScrapperSelectors, get_resource
@@ -12,7 +12,7 @@ class DouScrapper:
         vacancy_selector="vacancy",
         vacancy_link_selector="vt",
         vacancy_title_selector="vt",
-        vacancy_date_selector="date",
+        vacancy_published_at_selector="date",
         vacancy_salary_selector="salary",
         vacancy_locations_selector="cities",
         vacancy_detail_selector="sh-info",
@@ -30,10 +30,10 @@ class DouScrapper:
         if title is not None:
             title = title.get_text(strip=True)
 
-        date = vacancy_html.find(class_=self.selectors.vacancy_date_selector)
+        published_at = vacancy_html.find(class_=self.selectors.vacancy_published_at_selector)
 
-        if date is not None:
-            date = date.get_text(strip=True)
+        if published_at is not None:
+            published_at = published_at.get_text(strip=True)
 
         salary = vacancy_html.find(class_=self.selectors.vacancy_salary_selector)
 
@@ -64,17 +64,17 @@ class DouScrapper:
             company=company,
             locations=locations,
             origin="DOU",
-            published_at=date,
+            published_at=published_at,
             salary=salary,
         )
 
         return vacancy
 
     def scrape(self) -> list[Vacancy]:
-        resource = get_resource(self.main_url)
+        resource = get_resource(self.main_url, params={ "remote": self.location, "category": self.category })
         soup = BeautifulSoup(resource.content, "html.parser")
-        blocks = soup.find_all("div", class_=self.selectors.vacancy_selector)
-        vacancies = [self.parse_vacancy_html(block) for block in blocks]
+        nodes = soup.find_all("div", class_=self.selectors.vacancy_selector)
+        vacancies = [self.parse_vacancy_html(node) for node in nodes]
 
         return vacancies
 

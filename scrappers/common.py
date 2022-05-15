@@ -29,15 +29,15 @@ class ScrapperSelectors:
     vacancy_salary_selector: str
     vacancy_locations_selector: str
     vacancy_detail_selector: str
-    vacancy_date_selector: str
+    vacancy_published_at_selector: str
     vacancy_company_selector:str
     vacancy_more_selector: str
 
 
-def get_resource(url: str) -> requests.Response:
+def get_resource(url: str, params: dict = None) -> requests.Response:
     headers = {
         "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36",
     }
-    response = requests.get(url=url, headers=headers)
+    response = requests.get(url=url, headers=headers, params=params)
 
     return response
