@@ -1,5 +1,7 @@
-from bs4 import BeautifulSoup, Tag
+from datetime import datetime
 from dataclasses import dataclass, field
+
+from bs4 import BeautifulSoup, Tag
 
 from scrappers.common import ScrapperSelectors, get_resource
 from .vacancy import Vacancy
@@ -66,6 +68,7 @@ class DouScrapper:
             origin="DOU",
             published_at=published_at,
             salary=salary,
+            scrapped_at=datetime.now(),
         )
 
         return vacancy

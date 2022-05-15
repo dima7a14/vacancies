@@ -5,6 +5,8 @@ from dotenv import load_dotenv
 import firebase_admin
 from firebase_admin import db, credentials
 
+from errors import VacancyExistsException
+
 load_dotenv()
 
 cred = credentials.Certificate(os.environ.get("FIREBASE_CRED_PATH"))
@@ -27,11 +29,11 @@ def add_vacancy(data: map) -> None:
 
     if len(existed) == 0:
         db_ref.push().set(data)
-        print(f"Added vacancy: {data.get('title')} [{data.get('link')}]")
     else:
-        print(f"Vacancy {data.get('title')} [{data.get('link')}] is already existed")
+        raise VacancyExistsException(data)
 
 
 def clear_vacancies() -> None:
     db_ref = db.reference(vacancies_ref)
     db_ref.delete()
+
