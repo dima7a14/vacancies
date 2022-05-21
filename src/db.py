@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 import firebase_admin
 from firebase_admin import db, credentials
 
-from errors import VacancyExistsException
+from .errors import VacancyExistsException
 
 load_dotenv()
 

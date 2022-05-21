@@ -1,7 +1,7 @@
 from typing import Protocol
 from dataclasses import dataclass
 import requests
-from .vacancy import Vacancy
+from ..vacancy import Vacancy
 
 
 class Scrapper(Protocol):

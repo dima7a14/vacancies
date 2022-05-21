@@ -2,11 +2,12 @@ from datetime import datetime
 
 import click
 
-from scrappers.common import ScrapperService
-from scrappers.vacancy import Vacancy
-from scrappers.dou_scrapper import DouScrapper
-from db import add_vacancy, clear_vacancies, read_vacancies
-from errors import VacancyExistsException
+from src.scrappers.common import ScrapperService
+from src.vacancy import Vacancy, parse_vacancy
+from src.scrappers.dou_scrapper import DouScrapper
+from src.db import add_vacancy, clear_vacancies, read_vacancies
+from src.errors import VacancyExistsException
+from src.telegram_bot import bot
 
 @click.group()
 def cli() -> None:
@@ -38,17 +39,7 @@ def search() -> None:
 @click.command()
 def show() -> None:
     vacancies = [
-        Vacancy(
-            title=v.get("title"),
-            detail=v.get("detail"),
-            link=v.get("link"),
-            origin=v.get("origin"),
-            locations=v.get("locations"),
-            company=v.get("company"),
-            salary=v.get("salary"),
-            published_at=v.get("published_at"),
-            scrapped_at=datetime.fromisoformat(v.get("scrapped_at")),
-        ) for v in read_vacancies().values()
+        parse_vacancy(v) for v in read_vacancies().values()
     ]
 
     click.echo(vacancies)
@@ -58,9 +49,15 @@ def clear() -> None:
     clear_vacancies()
     click.echo("Vacancies cleared")
 
+@click.command()
+def start_bot() -> None:
+    bot.start_polling()
+    click.echo("Telegram bot is running...")
+
 cli.add_command(search)
 cli.add_command(show)
 cli.add_command(clear)
+cli.add_command(start_bot)
 
 if __name__ == "__main__":
     cli()

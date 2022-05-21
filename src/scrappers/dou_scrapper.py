@@ -3,8 +3,8 @@ from dataclasses import dataclass, field
 
 from bs4 import BeautifulSoup, Tag
 
-from scrappers.common import ScrapperSelectors, get_resource
-from .vacancy import Vacancy
+from .common import ScrapperSelectors, get_resource
+from ..vacancy import Vacancy
 
 
 @dataclass
