@@ -1,5 +1,6 @@
 import os
 from datetime import datetime, timedelta
+from typing import Callable
 
 from dotenv import load_dotenv
 import firebase_admin
@@ -37,3 +38,7 @@ def clear_vacancies() -> None:
     db_ref = db.reference(vacancies_ref)
     db_ref.delete()
 
+def listen_vacancies(cb: Callable) -> None:
+    db_ref = db.reference(vacancies_ref)
+
+    db_ref.listen(cb)

@@ -11,9 +11,11 @@ from telegram.ext.filters import Filters
 from .db import read_vacancies
 from .vacancy import Vacancy, parse_vacancy
 
+def get_allowed_ids() -> List[int]:
+    return [int(id.strip()) for id in os.environ.get("ALLOWED_USERS", "").split(",")]
 
 def auth(func: Callable):
-    allowed_ids: List[int] = [int(id.strip()) for id in os.environ.get("ALLOWED_USERS", "").split(",")]
+    allowed_ids = get_allowed_ids()
 
     def wrapper(update: Update, *args, **kwargs):
         user = update.message.from_user
@@ -58,3 +60,7 @@ def unknown(update: Update, context: CallbackContext) -> None:
 bot.dispatcher.add_handler(CommandHandler("start", show))
 bot.dispatcher.add_handler(CommandHandler("show", show))
 bot.dispatcher.add_handler(MessageHandler(Filters.command, unknown))
+
+def send_vacancy(vacancy: Vacancy) -> None:
+    for chat_id in get_allowed_ids():
+        bot.bot.send_message(chat_id=chat_id, text=render_vacancy(vacancy), parse_mode="markdown")

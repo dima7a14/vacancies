@@ -1,13 +1,11 @@
-from datetime import datetime
-
 import click
 
 from src.scrappers.common import ScrapperService
-from src.vacancy import Vacancy, parse_vacancy
+from src.vacancy import parse_vacancy
 from src.scrappers.dou_scrapper import DouScrapper
-from src.db import add_vacancy, clear_vacancies, read_vacancies
+from src.db import add_vacancy, clear_vacancies, read_vacancies, listen_vacancies
 from src.errors import VacancyExistsException
-from src.telegram_bot import bot
+from src.telegram_bot import bot, send_vacancy
 
 @click.group()
 def cli() -> None:
@@ -51,6 +49,12 @@ def clear() -> None:
 
 @click.command()
 def start_bot() -> None:
+    def notify(event: dict):
+        if event.path != "/" and event.data:
+            send_vacancy(parse_vacancy(event.data))
+
+
+    listen_vacancies(notify)
     bot.start_polling()
     click.echo("Telegram bot is running...")
 
