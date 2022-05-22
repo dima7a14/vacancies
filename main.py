@@ -12,9 +12,11 @@ def cli() -> None:
     pass
 
 @click.command()
-def search() -> None:
+@click.option("--category", default="Front End", help="Category of the vacancy")
+@click.option("--location", default="remote", help="Location of the vacancy")
+def search(category: str, location:str) -> None:
     scrapper = ScrapperService()
-    scrapper.register(DouScrapper())
+    scrapper.register(DouScrapper(category=category, location=location))
     scrapper.run()
 
     for vacancy in scrapper.vacancies:
