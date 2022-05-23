@@ -7,14 +7,7 @@ from src.db import add_vacancy, clear_vacancies, read_vacancies, listen_vacancie
 from src.errors import VacancyExistsException
 from src.telegram_bot import bot, send_vacancy
 
-@click.group()
-def cli() -> None:
-    pass
-
-@click.command()
-@click.option("--category", default="Front End", help="Category of the vacancy")
-@click.option("--location", default="remote", help="Location of the vacancy")
-def search(category: str, location:str) -> None:
+def scrape(category: str="Front End", location: str="remote") -> None:
     scrapper = ScrapperService()
     scrapper.register(DouScrapper(category=category, location=location))
     scrapper.run()
@@ -35,6 +28,16 @@ def search(category: str, location:str) -> None:
             click.echo(f"Added vacancy: {vacancy.title} [{vacancy.link}]")
         except VacancyExistsException as e:
             click.echo(e)
+
+@click.group()
+def cli() -> None:
+    pass
+
+@click.command()
+@click.option("--category", default="Front End", help="Category of the vacancy")
+@click.option("--location", default="remote", help="Location of the vacancy")
+def search(category: str, location: str) -> None:
+    scrape(category, location)
 
 @click.command()
 def show() -> None:
