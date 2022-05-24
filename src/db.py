@@ -1,5 +1,6 @@
 import os
 import json
+import base64
 from datetime import datetime, timedelta
 from typing import Callable
 
@@ -11,7 +12,7 @@ from .errors import VacancyExistsException
 
 load_dotenv()
 
-cred = credentials.Certificate(json.loads(os.environ.get("FIREBASE_CREDENTIALS")))
+cred = credentials.Certificate(json.loads(base64.b64decode(os.environ.get("FIREBASE_CREDENTIALS").encode("utf-8")).decode("utf-8")))
 firebase_admin.initialize_app(cred, {
     "databaseURL": os.environ.get("FIREBASE_DB_URL")
 })
