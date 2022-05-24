@@ -74,11 +74,15 @@ class DouScrapper:
         return vacancy
 
     def scrape(self) -> list[Vacancy]:
-        resource = get_resource(self.main_url, params={ "remote": self.location, "category": self.category })
-        soup = BeautifulSoup(resource.content, "html.parser")
-        nodes = soup.find_all("div", class_=self.selectors.vacancy_selector)
-        vacancies = [self.parse_vacancy_html(node) for node in nodes]
+        try:
+            resource = get_resource(self.main_url, params={ "remote": self.location, "category": self.category })
+            soup = BeautifulSoup(resource.content, "html.parser")
+            nodes = soup.find_all("div", class_=self.selectors.vacancy_selector)
+            vacancies = [self.parse_vacancy_html(node) for node in nodes]
 
-        return vacancies
+            return vacancies
+        except Exception as e:
+            print(e)
+            return []
 
 
