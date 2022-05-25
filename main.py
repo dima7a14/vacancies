@@ -5,7 +5,7 @@ from src.vacancy import parse_vacancy
 from src.scrappers.dou_scrapper import DouScrapper
 from src.db import add_vacancy, clear_vacancies, read_vacancies, listen_vacancies
 from src.errors import VacancyExistsException
-from src.telegram_bot import bot, send_vacancy
+from src.telegram_bot import Bot
 
 def scrape(category: str="Front End", location: str="remote") -> None:
     scrapper = ScrapperService()
@@ -54,13 +54,15 @@ def clear() -> None:
 
 @click.command()
 def start_bot() -> None:
+    bot = Bot()
+
     def notify(event: dict):
         if event.path != "/" and event.data:
-            send_vacancy(parse_vacancy(event.data))
+            bot.send_vacancy(parse_vacancy(event.data))
 
 
     listen_vacancies(notify)
-    bot.start_polling()
+    bot.start()
     click.echo("Telegram bot is running...")
 
 cli.add_command(search)

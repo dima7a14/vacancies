@@ -38,7 +38,6 @@ def render_vacancy(vacancy: Vacancy) -> str:
         **Published at: **{vacancy.published_at}
     """
 
-bot = Updater(os.environ.get("TELEGRAM_BOT_TOKEN"), use_context=True)
 
 @auth
 def show(update: Update, context: CallbackContext) -> None:
@@ -57,10 +56,19 @@ def unknown(update: Update, context: CallbackContext) -> None:
     update.message.reply_text(f"Sorry, {update.message.text} is not a valid command.")
 
 
-bot.dispatcher.add_handler(CommandHandler("start", show))
-bot.dispatcher.add_handler(CommandHandler("show", show))
-bot.dispatcher.add_handler(MessageHandler(Filters.command, unknown))
+class Bot:
+    def __init__(self) -> None:
+        self.updater = Updater(os.environ.get("TELEGRAM_BOT_TOKEN"), use_context=True)
+        dp = self.updater.dispatcher
 
-def send_vacancy(vacancy: Vacancy) -> None:
-    for chat_id in get_allowed_ids():
-        bot.bot.send_message(chat_id=chat_id, text=render_vacancy(vacancy), parse_mode="markdown")
+        dp.add_handler(CommandHandler("start", show))
+        dp.add_handler(CommandHandler("show", show))
+        dp.add_handler(MessageHandler(Filters.command, unknown))
+
+    def start(self) -> None:
+        self.updater.start_webhook(listen="0.0.0.0", port=int(os.environ.get("TELEGRAM_BOT_PORT")), url_path=os.environ.get("TELEGRAM_BOT_TOKEN"))
+        self.updater.bot.set_webhook(f"https://vacancies-bot.herokuapp.com/{os.environ.get('TELEGRAM_BOT_TOKEN')}")
+        
+    def send_vacancy(self, vacancy: Vacancy) -> None:
+        for chat_id in get_allowed_ids():
+            self.updater.bot.send_message(chat_id=chat_id, text=render_vacancy(vacancy), parse_mode="markdown")
