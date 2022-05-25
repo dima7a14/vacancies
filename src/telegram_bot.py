@@ -11,8 +11,12 @@ from telegram.ext.filters import Filters
 from .db import read_vacancies
 from .vacancy import Vacancy, parse_vacancy
 
+PORT = int(os.environ.get("PORT"))
+TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN")
+ALLOWED_USERS = os.environ.get("ALLOWED_USERS")
+
 def get_allowed_ids() -> List[int]:
-    return [int(id.strip()) for id in os.environ.get("ALLOWED_USERS", "").split(",")]
+    return [int(id.strip()) for id in ALLOWED_USERS.split(",")]
 
 def auth(func: Callable):
     allowed_ids = get_allowed_ids()
@@ -58,7 +62,7 @@ def unknown(update: Update, context: CallbackContext) -> None:
 
 class Bot:
     def __init__(self) -> None:
-        self.updater = Updater(os.environ.get("TELEGRAM_BOT_TOKEN"), use_context=True)
+        self.updater = Updater(TOKEN, use_context=True)
         dp = self.updater.dispatcher
 
         dp.add_handler(CommandHandler("start", show))
@@ -66,8 +70,8 @@ class Bot:
         dp.add_handler(MessageHandler(Filters.command, unknown))
 
     def start(self) -> None:
-        self.updater.start_webhook(listen="0.0.0.0", port=int(os.environ.get("TELEGRAM_BOT_PORT")), url_path=os.environ.get("TELEGRAM_BOT_TOKEN"))
-        self.updater.bot.set_webhook(f"https://vacancies-bot.herokuapp.com/{os.environ.get('TELEGRAM_BOT_TOKEN')}")
+        self.updater.start_webhook(listen="0.0.0.0", port=PORT, url_path=TOKEN)
+        self.updater.bot.set_webhook(f"https://vacancies-bot.herokuapp.com/{TOKEN}")
         
     def send_vacancy(self, vacancy: Vacancy) -> None:
         for chat_id in get_allowed_ids():
