@@ -70,8 +70,7 @@ class Bot:
         dp.add_handler(MessageHandler(Filters.command, unknown))
 
     def start(self) -> None:
-        self.updater.start_webhook(listen="0.0.0.0", port=PORT, url_path=TOKEN)
-        self.updater.bot.set_webhook(f"https://vacancies-bot.herokuapp.com/{TOKEN}")
+        self.updater.start_webhook(listen="0.0.0.0", port=PORT, url_path=TOKEN, webhook_url="https://vacancies-bot.herokuapp.com/" + TOKEN)
         
     def send_vacancy(self, vacancy: Vacancy) -> None:
         for chat_id in get_allowed_ids():
