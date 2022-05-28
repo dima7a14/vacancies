@@ -22,8 +22,8 @@ class DouScrapper:
         "vacancy_company": {"class_": "company"},
         "vacancy_more": {"class_": "more-btn"},
     })
-    category: str = field(default="Front End")
-    location: str = field(default="remote")
+    category: str = field()
+    location: str = field()
 
     def parse_vacancy_html(self, vacancy_html: Tag) -> Vacancy:
         link = vacancy_html.find(**self.selectors["vacancy_link"]).get("href")

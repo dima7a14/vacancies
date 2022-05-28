@@ -20,9 +20,9 @@ class DjinniScrapper:
         "vacancy_locations": {"class_": "icon-home_work"},
         "vacancy_company": {"class_": "list-jobs__details__info"},
     })
-    development: str = field(default="javascript")
-    employment: str = field(default="remote")
-    salary: int = field(default=8500)
+    development: str = field()
+    employment: str = field()
+    salary: int = field()
 
     def parse_vacancy_html(self, vacancy_html: Tag) -> Vacancy:
         link = self.main_url[:-6] + vacancy_html.find("a", **self.selectors["vacancy_link"]).get("href")
