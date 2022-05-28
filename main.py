@@ -3,13 +3,15 @@ import click
 from src.scrappers.common import ScrapperService
 from src.vacancy import parse_vacancy
 from src.scrappers.dou_scrapper import DouScrapper
+from src.scrappers.djinni_scrapper import DjinniScrapper
 from src.db import add_vacancy, clear_vacancies, read_vacancies, listen_vacancies
 from src.errors import VacancyExistsException
 from src.telegram_bot import Bot
 
-def scrape(category: str="Front End", location: str="remote") -> None:
+def scrape() -> None:
     scrapper = ScrapperService()
-    scrapper.register(DouScrapper(category=category, location=location))
+    scrapper.register(DouScrapper())
+    scrapper.register(DjinniScrapper())
     scrapper.run()
 
     for vacancy in scrapper.vacancies:
@@ -22,7 +24,7 @@ def scrape(category: str="Front End", location: str="remote") -> None:
                 "origin": vacancy.origin,
                 "locations": vacancy.locations,
                 "salary": vacancy.salary,
-                "published_at": vacancy.published_at,
+                "published_at": vacancy.published_at.isoformat(),
                 "scrapped_at": vacancy.scrapped_at.isoformat(),
             })
             click.echo(f"Added vacancy: {vacancy.title} [{vacancy.link}]")
@@ -34,10 +36,8 @@ def cli() -> None:
     pass
 
 @click.command()
-@click.option("--category", default="Front End", help="Category of the vacancy")
-@click.option("--location", default="remote", help="Location of the vacancy")
-def search(category: str, location: str) -> None:
-    scrape(category, location)
+def search() -> None:
+    scrape()
 
 @click.command()
 def show() -> None:
