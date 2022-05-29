@@ -53,7 +53,15 @@ def search(
 ) -> None:
     scrape(scrapper_getters=[
         lambda: DouScrapper(category=dou_category, location=dou_location),
-        lambda: DjinniScrapper(development=djinni_development, employment=djinni_employment, salary=int(djinni_salary))
+        lambda: DjinniScrapper(development=djinni_development, employment=djinni_employment, salary=int(djinni_salary)),
+    ])
+
+@click.command()
+def run() -> None:
+    run_bot()
+    scrape(scrapper_getters=[
+        lambda: DouScrapper(category=DOU_CATEGORY, location=DOU_LOCATION),
+        lambda: DjinniScrapper(development=DJINNI_DEVELOPMENT, employment=DJINNI_EMPLOYMENT, salary=DJINNI_SALARY),
     ])
 
 @click.command()
@@ -69,8 +77,7 @@ def clear() -> None:
     clear_vacancies()
     click.echo("Vacancies cleared")
 
-@click.command()
-def start_bot() -> None:
+def run_bot() -> None:
     bot = Bot()
 
     def notify(event: dict):
@@ -82,10 +89,15 @@ def start_bot() -> None:
     bot.start()
     click.echo("Telegram bot is running...")
 
+@click.command()
+def start_bot() -> None:
+    run_bot()
+
 cli.add_command(search)
 cli.add_command(show)
 cli.add_command(clear)
 cli.add_command(start_bot)
+cli.add_command(run)
 
 if __name__ == "__main__":
     cli()
