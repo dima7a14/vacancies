@@ -1,3 +1,4 @@
+from typing import Optional
 from datetime import datetime, timedelta
 from dataclasses import dataclass, field
 
@@ -22,7 +23,17 @@ class DjinniScrapper:
     })
     development: str = field()
     employment: str = field()
-    salary: int = field()
+    salary: Optional[int] = field(default=None)
+
+    @staticmethod
+    def _parse_published_at(published_at: str) -> str:
+        if published_at == "сьогодні":
+            return datetime.now()
+        
+        if published_at == "вчора":
+            return datetime.now() - timedelta(days=1)
+
+        return dateparser.parse(published_at)
 
     def parse_vacancy_html(self, vacancy_html: Tag) -> Vacancy:
         link = self.main_url[:-6] + vacancy_html.find("a", **self.selectors["vacancy_link"]).get("href")
@@ -82,19 +93,17 @@ class DjinniScrapper:
 
         return vacancy
 
-    @staticmethod
-    def _parse_published_at(published_at: str) -> str:
-        if published_at == "сьогодні":
-            return datetime.now()
-        
-        if published_at == "вчора":
-            return datetime.now() - timedelta(days=1)
+    def get_url(self) -> str:
+        url: str = f"{self.main_url}keyword-{self.development}/?employment={self.employment}"
 
-        return dateparser.parse(published_at)
+        if self.salary is not None:
+            url = f"{url}&salary={self.salary}"
+
+        return url
 
     def scrape(self) -> list[Vacancy]:
         try:
-            resource = get_resource(f"{self.main_url}keyword-{self.development}/?employment={self.employment}&salary={self.salary}")
+            resource = get_resource(self.get_url())
             soup = BeautifulSoup(resource.content, "html.parser")
             nodes = soup.find_all("li", **self.selectors["vacancy"])
             vacancies = [self.parse_vacancy_html(node) for node in nodes]
