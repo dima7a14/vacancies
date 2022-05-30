@@ -31,18 +31,6 @@ def auth(func: Callable):
     
     return wrapper
 
-def render_vacancy(vacancy: Vacancy) -> str:
-    return f"""
-        **[{vacancy.title}]({vacancy.link})**\n
-        {vacancy.detail}\n
-        **Salary: **{vacancy.salary}
-        **Locations: **{", ".join(vacancy.locations)}
-        **Company: **{vacancy.company}
-        **Origin: **{vacancy.origin}
-        **Published at: **{vacancy.published_at}
-    """
-
-
 @auth
 def show(update: Update, context: CallbackContext) -> None:
     vacancies = read_vacancies().values()
@@ -53,7 +41,7 @@ def show(update: Update, context: CallbackContext) -> None:
         vacancies = [parse_vacancy(v) for v in read_vacancies().values()]
     
         for vacancy in vacancies:
-            update.message.reply_text(render_vacancy(vacancy), parse_mode="markdown")
+            update.message.reply_text(vacancy.render_markdown(), parse_mode="markdown")
 
 @auth
 def unknown(update: Update, context: CallbackContext) -> None:
@@ -74,4 +62,4 @@ class Bot:
         
     def send_vacancy(self, vacancy: Vacancy) -> None:
         for chat_id in get_allowed_ids():
-            self.updater.bot.send_message(chat_id=chat_id, text=render_vacancy(vacancy), parse_mode="markdown")
+            self.updater.bot.send_message(chat_id=chat_id, text=vacancy.render_markdown(), parse_mode="markdown")

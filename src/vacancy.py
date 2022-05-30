@@ -18,6 +18,23 @@ class Vacancy:
     def __eq__(self, obj: object) -> bool:
         return self.link == obj.link
 
+    def render_markdown(self) -> str:
+        output: str = f"""
+            **[{self.title}]({self.link})**\n
+            {self.detail}\n
+        """
+
+        if self.salary is not None:
+            output += f"**Salary: **{self.salary}\n"
+
+        output += f"""
+            **Locations: **{", ".join(self.locations)}
+            **Company: **{self.company}
+            **Origin: **{self.origin}
+            **Published at: **{self.published_at}
+        """
+
+        return output
 
 
 def parse_vacancy(data: dict) -> Vacancy:
