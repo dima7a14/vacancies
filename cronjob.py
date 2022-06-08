@@ -1,6 +1,6 @@
 from apscheduler.schedulers.blocking import BlockingScheduler
 
-from env import DOU_CATEGORY, DOU_LOCATION, DJINNI_DEVELOPMENT, DJINNI_EMPLOYMENT, DJINNI_SALARY, SCRAPE_INTERVAL
+from src.config import DOU_CATEGORY, DOU_LOCATION, DJINNI_DEVELOPMENT, DJINNI_EMPLOYMENT, DJINNI_SALARY, SCRAPE_INTERVAL
 from src.scrappers.dou_scrapper import DouScrapper
 from src.scrappers.djinni_scrapper import DjinniScrapper
 from main import DJINNI_EMPLOYMENT, scrape

@@ -1,7 +1,7 @@
 from typing import Callable
 import click
 
-from env import DOU_CATEGORY, DOU_LOCATION, DJINNI_DEVELOPMENT, DJINNI_EMPLOYMENT, DJINNI_SALARY
+from src.config import DOU_CATEGORY, DOU_LOCATION, DJINNI_DEVELOPMENT, DJINNI_EMPLOYMENT, DJINNI_SALARY
 from src.vacancy import parse_vacancy
 from src.scrappers.common import ScrapperService, Scrapper
 from src.scrappers.dou_scrapper import DouScrapper

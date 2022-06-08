@@ -1,4 +1,3 @@
-import os
 import json
 import base64
 from datetime import datetime, timedelta
@@ -7,14 +6,15 @@ from typing import Callable
 import firebase_admin
 from firebase_admin import db, credentials
 
+from .config import FIREBASE_CREDENTIALS, FIREBASE_DB_URL, FIREBASE_USER_UID
 from .errors import VacancyExistsException
 
-cred = credentials.Certificate(json.loads(base64.b64decode(os.environ.get("FIREBASE_CREDENTIALS").encode("utf-8")).decode("utf-8")))
+cred = credentials.Certificate(json.loads(base64.b64decode(FIREBASE_CREDENTIALS.encode("utf-8")).decode("utf-8")))
 firebase_admin.initialize_app(cred, {
-    "databaseURL": os.environ.get("FIREBASE_DB_URL")
+    "databaseURL": FIREBASE_DB_URL,
 })
 
-vacancies_ref = "/vacancies"
+vacancies_ref = f"/vacancies/{FIREBASE_USER_UID}"
 
 def read_vacancies() -> map:
     start_date = datetime.now() - timedelta(days=2)
