@@ -78,7 +78,7 @@ class DouScrapper:
 
     def scrape(self) -> list[Vacancy]:
         try:
-            resource = get_resource(self.main_url, params={ "remote": self.location, "category": self.category })
+            resource = get_resource(self.main_url, params={"remote": self.location, "category": self.category})
             soup = BeautifulSoup(resource.content, "html.parser")
             nodes = soup.find_all("div", **self.selectors["vacancy"])
             vacancies = [self.parse_vacancy_html(node) for node in nodes]

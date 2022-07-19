@@ -6,6 +6,7 @@ from src.vacancy import parse_vacancy
 from src.scrappers.common import ScrapperService, Scrapper
 from src.scrappers.dou_scrapper import DouScrapper
 from src.scrappers.djinni_scrapper import DjinniScrapper
+from src.scrappers.fwdays_scrapper import FwdaysScrapper, Specialization, Location
 from src.db import add_vacancy, clear_vacancies, read_vacancies, listen_vacancies
 from src.errors import VacancyExistsException
 from src.telegram_bot import Bot
@@ -54,6 +55,18 @@ def search(
     scrape(scrapper_getters=[
         lambda: DouScrapper(category=dou_category, location=dou_location),
         lambda: DjinniScrapper(development=djinni_development, employment=djinni_employment, salary=int(djinni_salary)),
+        lambda: FwdaysScrapper(
+            specializations=[
+                Specialization.FRONTEND,
+                Specialization.JAVASCRIPT,
+                Specialization.PYTHON,
+                Specialization.REACT,
+            ],
+            locations=[
+                Location.ONLINE,
+                Location.UKRAINE,
+            ],
+        ),
     ])
 
 @click.command()
@@ -62,6 +75,18 @@ def run() -> None:
     scrape(scrapper_getters=[
         lambda: DouScrapper(category=DOU_CATEGORY, location=DOU_LOCATION),
         lambda: DjinniScrapper(development=DJINNI_DEVELOPMENT, employment=DJINNI_EMPLOYMENT, salary=DJINNI_SALARY),
+        lambda: FwdaysScrapper(
+            specializations=[
+                Specialization.FRONTEND,
+                Specialization.JAVASCRIPT,
+                Specialization.PYTHON,
+                Specialization.REACT,
+            ],
+            locations=[
+                Location.ONLINE,
+                Location.UKRAINE,
+            ],
+        ),
     ])
 
 @click.command()

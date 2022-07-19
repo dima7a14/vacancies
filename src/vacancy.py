@@ -39,13 +39,13 @@ class Vacancy:
 
 def parse_vacancy(data: dict) -> Vacancy:
     return Vacancy(
-        title=data.get("title"),
-        detail=data.get("detail"),
-        company=data.get("company"),
-        link=data.get("link"),
-        locations=data.get("locations"),
-        origin=data.get("origin"),
+        title=data.get("title", ""),
+        detail=data.get("detail", ""),
+        company=data.get("company", ""),
+        link=data.get("link", ""),
+        locations=data.get("locations", []),
+        origin=data.get("origin", ""),
         published_at=datetime.fromisoformat(data.get("published_at")),
-        salary=data.get("salary"),
+        salary=data.get("salary", ""),
         scrapped_at=datetime.fromisoformat(data.get("scrapped_at")),
     )
