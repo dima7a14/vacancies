@@ -5,6 +5,8 @@
 ## TODO:
 - [X] Add Fwdays scrapper;
 - [X] Refactor ENV variables;
-- ~~[ ] Add no fluff jobs scrapper;~~
+- ~~Add no fluff jobs scrapper;~~
 - [X] Add Sentry integration;
-- [ ] Deploy on AWS & configure CI/CD.
+- [ ] Deploy on AWS & configure CI/CD;
+- [ ] Add typing checks;
+- [ ] Add unit-tests.
