@@ -1,10 +1,26 @@
 from typing import Protocol
 from dataclasses import dataclass
+from enum import Enum
 import requests
 from ..vacancy import Vacancy
 
 
+class Specialization(Enum):
+    FRONTEND = "frontend"
+    NODEJS = "node.js"
+    PYTHON = "python"
+    FLUTTER = "flutter"
+
+
+class Location(Enum):
+    REMOTE = "remote"
+    PART_TIME = "part-time"
+    UKRAINE = "ukraine"
+
 class Scrapper(Protocol):
+    def __init__(self, specializations: list[Specialization], locations: list[Location]) -> None:
+        ...
+
     def scrape() -> list[Vacancy]:
         ...
 

@@ -1,11 +1,23 @@
 from datetime import datetime
 from dataclasses import dataclass, field
+from enum import Enum
 
 from bs4 import BeautifulSoup, Tag
 import dateparser
 
-from .common import get_resource
+from .common import get_resource, Specialization, Location
 from ..vacancy import Vacancy
+
+
+class DouCategory(Enum):
+    FRONTEND = "Front End"
+    FLUTTER = "Flutter"
+    NODEJS = "Node.js"
+    PYTHON = "Python"
+
+
+class DouLocation(Enum):
+    REMOTE = "remote"
 
 
 @dataclass
@@ -89,3 +101,34 @@ class DouScrapper:
             return []
 
 
+def make_dou_scrappers(specializations: list[Specialization], locations: list[Location]) -> list[DouScrapper]:
+    dou_categories: list[DouCategory] = []
+    dou_locations: list[DouLocation] = []
+
+    for specialization in specializations:
+        match specialization:
+            case Specialization.FRONTEND.value:
+                dou_categories.append(DouCategory.FRONTEND)
+            case Specialization.NODEJS.value:
+                dou_categories.append(DouCategory.NODEJS)
+            case Specialization.PYTHON.value:
+                dou_categories.append(DouCategory.PYTHON)
+            case Specialization.FLUTTER.value:
+                dou_categories.append(DouCategory.FLUTTER)
+            case _:
+                print(f"There is no match for specialization {specialization} in DouScrapper")
+
+    for location in locations:
+        match location:
+            case Location.REMOTE.value:
+                dou_locations.append(DouLocation.REMOTE)
+            case _:
+                print(f"There is no match for location {location} in DouScrapper")
+
+    scrappers: list[DouScrapper] = []
+
+    for category in dou_categories:
+        for location in dou_locations:
+            scrappers.append(DouScrapper(category.value, location.value))
+    
+    return scrappers

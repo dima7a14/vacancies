@@ -1,12 +1,26 @@
 from typing import Optional
 from datetime import datetime, timedelta
 from dataclasses import dataclass, field
+from enum import Enum
 
 from bs4 import BeautifulSoup, Tag
 import dateparser
 
-from .common import get_resource
+from .common import get_resource, Specialization, Location
 from ..vacancy import Vacancy
+
+
+class DjinniDevelopment(Enum):
+    FRONTEND = "javascript"
+    NODEJS = "node.js"
+    PYTHON = "python"
+    FLUTTER = "flutter"
+
+
+class DjinniEmployment(Enum):
+    REMOTE = "remote"
+    PARTTIME = "parttime"
+
 
 @dataclass
 class DjinniScrapper:
@@ -114,3 +128,37 @@ class DjinniScrapper:
             return []
 
 
+def make_djinni_scrappers(specializations: list[Specialization], locations: list[Location], salaries: list[int]) -> list[DjinniScrapper]:
+    djinni_developments: list[DjinniDevelopment] = []
+    djinni_employments: list[DjinniEmployment] = []
+
+    for specialization in specializations:
+        match specialization:
+            case Specialization.FRONTEND.value:
+                djinni_developments.append(DjinniDevelopment.FRONTEND)
+            case Specialization.NODEJS.value:
+                djinni_developments.append(DjinniDevelopment.NODEJS)
+            case Specialization.PYTHON.value:
+                djinni_developments.append(DjinniDevelopment.PYTHON)
+            case Specialization.FLUTTER.value:
+                djinni_developments.append(DjinniDevelopment.FLUTTER)
+            case _:
+                print(f"There is no match for specialization {specialization} in DjinniScrapper")
+    
+    for location in locations:
+        match location:
+            case Location.REMOTE.value:
+                djinni_employments.append(DjinniEmployment.REMOTE)
+            case Location.PART_TIME.value:
+                djinni_employments.append(DjinniEmployment.PARTTIME)
+            case _:
+                print(f"There is no match for location {location} in DjinniScrapper")
+    
+    scrappers: list[DjinniScrapper] = []
+
+    for development in djinni_developments:
+        for employment in djinni_employments:
+            for salary in salaries:
+                scrappers.append(DjinniScrapper(development=development.value, employment=employment.value, salary=salary))
+
+    return scrappers

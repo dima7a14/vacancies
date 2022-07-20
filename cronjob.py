@@ -1,27 +1,16 @@
 from apscheduler.schedulers.blocking import BlockingScheduler
 
-from src.config import DOU_CATEGORY, DOU_LOCATION, DJINNI_DEVELOPMENT, DJINNI_EMPLOYMENT, DJINNI_SALARY, SCRAPE_INTERVAL
-from src.scrappers.dou_scrapper import DouScrapper
-from src.scrappers.djinni_scrapper import DjinniScrapper
-from src.scrappers.fwdays_scrapper import FwdaysScrapper, Specialization, Location
-from main import DJINNI_EMPLOYMENT, scrape
+from src.config import SPECIALIZATIONS, LOCATIONS, SALARIES, SCRAPE_INTERVAL
+from src.scrappers.dou_scrapper import make_dou_scrappers
+from src.scrappers.djinni_scrapper import make_djinni_scrappers
+from src.scrappers.fwdays_scrapper import make_fwdays_scrappers
+from main import scrape
 
 def scrape_job() -> None:
-    scrape(scrapper_getters=[
-        lambda: DouScrapper(category=DOU_CATEGORY, location=DOU_LOCATION),
-        lambda: DjinniScrapper(development=DJINNI_DEVELOPMENT, employment=DJINNI_EMPLOYMENT, salary=DJINNI_SALARY),
-        lambda: FwdaysScrapper(
-            specializations=[
-                Specialization.FRONTEND,
-                Specialization.JAVASCRIPT,
-                Specialization.PYTHON,
-                Specialization.REACT,
-            ],
-            locations=[
-                Location.ONLINE,
-                Location.UKRAINE,
-            ],
-        ),
+    scrape([
+        *make_dou_scrappers(SPECIALIZATIONS, LOCATIONS),
+        *make_djinni_scrappers(SPECIALIZATIONS, LOCATIONS, SALARIES),
+        *make_fwdays_scrappers(SPECIALIZATIONS, LOCATIONS)
     ])
 
 scheduler = BlockingScheduler()

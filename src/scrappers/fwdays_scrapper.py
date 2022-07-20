@@ -5,16 +5,16 @@ from enum import Enum
 from bs4 import BeautifulSoup, Tag
 import dateparser
 
-from .common import get_resource
+from .common import Specialization, Location, get_resource
 from ..vacancy import Vacancy
 
 
-class Location(Enum):
+class FwdaysLocation(Enum):
     ONLINE = 2
     UKRAINE = 13
 
 
-class Specialization(Enum):
+class FwdaysSpecialization(Enum):
     PYTHON = 2
     JAVASCRIPT = 3
     FRONTEND = 8
@@ -33,8 +33,8 @@ class FwdaysScrapper:
         "vacancy_info": {"selector": ".vacancy__info"},
         "vacancy_detail": {"selector": ".vacancy__desc"},
     })
-    specializations: list[Specialization] = field(default_factory=lambda: list())
-    locations: list[Location] = field(default_factory=lambda: list())
+    specializations: list[FwdaysSpecialization] = field(default_factory=lambda: list())
+    locations: list[FwdaysLocation] = field(default_factory=lambda: list())
 
     def parse_vacancy_html(self, vacancy_html: Tag) -> Vacancy:
         link = vacancy_html.select(self.selectors["vacancy_link"]["selector"])
@@ -63,7 +63,7 @@ class FwdaysScrapper:
 
         if len(info) > 0:
             info = info[0].get_text(strip=True)
-            detail += info
+            detail += f"\n\n{info}"
 
         company = ""
         salary = None
@@ -109,3 +109,32 @@ class FwdaysScrapper:
         except Exception as e:
             print(e)
             return []
+
+
+
+def make_fwdays_scrappers(specializations: list[Specialization], locations: list[Location]) -> list[FwdaysScrapper]:
+    fwdays_specializations: list[FwdaysSpecialization] = []
+    fwdays_locations: list[FwdaysLocation] = []
+
+    for specialization in specializations:
+        match specialization:
+            case Specialization.FRONTEND.value:
+                fwdays_specializations.extend([FwdaysSpecialization.FRONTEND, FwdaysSpecialization.JAVASCRIPT, FwdaysSpecialization.REACT])
+            case Specialization.PYTHON.value:
+                fwdays_specializations.append(FwdaysSpecialization.PYTHON)
+            case Specialization.NODEJS.value:
+                fwdays_specializations.append(FwdaysSpecialization.NODEJS)
+            case _:
+                print(f"There is no match for specialization {specialization} in FwdaysScrapper")
+
+    for location in locations:
+        match location:
+            case Location.REMOTE.value:
+                fwdays_locations.append(FwdaysLocation.ONLINE)
+            case Location.UKRAINE.value:
+                fwdays_locations.append(FwdaysLocation.UKRAINE)
+            case _:
+                print(f"There is no match for location {location} in FwdaysScrapper")
+
+    return [FwdaysScrapper(specializations=fwdays_specializations, locations=fwdays_locations)]
+

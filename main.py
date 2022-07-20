@@ -1,24 +1,23 @@
-from typing import Callable
 import click
 
-from src.config import DOU_CATEGORY, DOU_LOCATION, DJINNI_DEVELOPMENT, DJINNI_EMPLOYMENT, DJINNI_SALARY
+from src.config import SPECIALIZATIONS, LOCATIONS, SALARIES
 from src.vacancy import parse_vacancy
-from src.scrappers.common import ScrapperService, Scrapper
-from src.scrappers.dou_scrapper import DouScrapper
-from src.scrappers.djinni_scrapper import DjinniScrapper
-from src.scrappers.fwdays_scrapper import FwdaysScrapper, Specialization, Location
+from src.scrappers.common import Location, ScrapperService, Scrapper, Specialization
+from src.scrappers.dou_scrapper import make_dou_scrappers
+from src.scrappers.djinni_scrapper import make_djinni_scrappers
+from src.scrappers.fwdays_scrapper import make_fwdays_scrappers
 from src.db import add_vacancy, clear_vacancies, read_vacancies, listen_vacancies
 from src.errors import VacancyExistsException
 from src.telegram_bot import Bot
 
 
-def scrape(scrapper_getters: list[Callable[..., Scrapper]]) -> None:
-    scrapper = ScrapperService()
-    for scr_getter in scrapper_getters:
-        scrapper.register(scr_getter())
-    scrapper.run()
+def scrape(scrappers: list[Scrapper]) -> None:
+    scrapper_service = ScrapperService()
+    for scrapper in scrappers:
+        scrapper_service.register(scrapper)
+    scrapper_service.run()
 
-    for vacancy in scrapper.vacancies:
+    for vacancy in scrapper_service.vacancies:
         try:
             add_vacancy({
                 "title": vacancy.title,
@@ -40,53 +39,21 @@ def cli() -> None:
     pass
 
 @click.command()
-@click.option("--dou-category", default=DOU_CATEGORY, help="Category of the vacancy on DOU")
-@click.option("--dou-location", default=DOU_LOCATION, help="Location of the vacancy on DOU")
-@click.option("--djinni-development", default=DJINNI_DEVELOPMENT, help="Development of the vacancy on djinni")
-@click.option("--djinni-employment", default=DJINNI_EMPLOYMENT, help="Employment of the vacancy on djinni")
-@click.option("--djinni-salary", default=DJINNI_SALARY, help="Salary of the vacancy on djinni")
-def search(
-    dou_category: str,
-    dou_location: str,
-    djinni_development: str,
-    djinni_employment: str,
-    djinni_salary: int,
-) -> None:
-    scrape(scrapper_getters=[
-        lambda: DouScrapper(category=dou_category, location=dou_location),
-        lambda: DjinniScrapper(development=djinni_development, employment=djinni_employment, salary=int(djinni_salary)),
-        lambda: FwdaysScrapper(
-            specializations=[
-                Specialization.FRONTEND,
-                Specialization.JAVASCRIPT,
-                Specialization.PYTHON,
-                Specialization.REACT,
-            ],
-            locations=[
-                Location.ONLINE,
-                Location.UKRAINE,
-            ],
-        ),
+def search() -> None:
+    scrape([
+        *make_dou_scrappers(SPECIALIZATIONS, LOCATIONS),
+        *make_djinni_scrappers(SPECIALIZATIONS, LOCATIONS, SALARIES),
+        *make_fwdays_scrappers(SPECIALIZATIONS, LOCATIONS)
     ])
+
 
 @click.command()
 def run() -> None:
     run_bot()
-    scrape(scrapper_getters=[
-        lambda: DouScrapper(category=DOU_CATEGORY, location=DOU_LOCATION),
-        lambda: DjinniScrapper(development=DJINNI_DEVELOPMENT, employment=DJINNI_EMPLOYMENT, salary=DJINNI_SALARY),
-        lambda: FwdaysScrapper(
-            specializations=[
-                Specialization.FRONTEND,
-                Specialization.JAVASCRIPT,
-                Specialization.PYTHON,
-                Specialization.REACT,
-            ],
-            locations=[
-                Location.ONLINE,
-                Location.UKRAINE,
-            ],
-        ),
+    scrape([
+        *make_dou_scrappers(SPECIALIZATIONS, LOCATIONS),
+        *make_djinni_scrappers(SPECIALIZATIONS, LOCATIONS, SALARIES),
+        *make_fwdays_scrappers(SPECIALIZATIONS, LOCATIONS)
     ])
 
 @click.command()
