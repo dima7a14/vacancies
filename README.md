@@ -3,8 +3,8 @@
     My personal script for scraping vacancies.
 
 ## TODO:
-- [x] Add Fwdays scrapper;
+- [X] Add Fwdays scrapper;
 - [X] Refactor ENV variables;
 - ~~[ ] Add no fluff jobs scrapper;~~
-- [ ] Add Sentry;
+- [X] Add Sentry integration;
 - [ ] Deploy on AWS & configure CI/CD.
