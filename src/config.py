@@ -11,3 +11,4 @@ SPECIALIZATIONS = os.environ.get("SPECIALIZATIONS", "").split(",")
 LOCATIONS = os.environ.get("LOCATIONS", "").split(",")
 SALARIES = [int(s) for s in os.environ.get("SALARIES", "").split(",") if s != ""]
 SCRAPE_INTERVAL = int(os.environ.get("SCRAPE_INTERVAL", 1800))
+SENTRY_DSN = os.environ.get("SENTRY_DSN")

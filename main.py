@@ -9,9 +9,11 @@ from src.scrappers.fwdays_scrapper import make_fwdays_scrappers
 from src.db import add_vacancy, clear_vacancies, read_vacancies, listen_vacancies
 from src.errors import VacancyExistsException
 from src.telegram_bot import Bot
+from src.sentry import init_sentry
 
 
 def scrape(scrappers: list[Scrapper]) -> None:
+    init_sentry()
     scrapper_service = ScrapperService()
     for scrapper in scrappers:
         scrapper_service.register(scrapper)
